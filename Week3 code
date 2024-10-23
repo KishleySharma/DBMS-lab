@@ -1,0 +1,118 @@
+CREATE DATABASE Bankkishley_153;
+use Bankkishley_153;
+CREATE TABLE Branch_153 (
+    branch_name VARCHAR(100) PRIMARY KEY,
+    branch_city VARCHAR(100),
+    assets REAL
+);
+
+
+CREATE TABLE BankAccount_153 (
+    accno INT PRIMARY KEY,
+    branch_name VARCHAR(100),
+    balance REAL,
+    FOREIGN KEY (branch_name) REFERENCES Branch_153(branch_name)
+);
+
+
+CREATE TABLE BankCustomer_153 (
+    customer_name VARCHAR(100) PRIMARY KEY,
+    customer_street VARCHAR(100),
+    customer_city VARCHAR(100)
+);
+
+
+CREATE TABLE Depositer_153 (
+    customer_name VARCHAR(100),
+    accno INT,
+    PRIMARY KEY (customer_name, accno),
+    FOREIGN KEY (customer_name) REFERENCES BankCustomer_153(customer_name),
+    FOREIGN KEY (accno) REFERENCES BankAccount_153(accno)
+);
+
+
+CREATE TABLE LOAN_15 (
+    loan_number INT PRIMARY KEY,
+    branch_name VARCHAR(100),
+    amount REAL,
+    FOREIGN KEY (branch_name) REFERENCES Branch_153(branch_name)
+);
+
+
+INSERT INTO Branch_153(branch_name, branch_city, assets) VALUES
+('MG Road', 'Bangalore', 6000000.00),
+('Indiranagar', 'Bangalore', 3500000.00),
+('Jayanagar', 'Bangalore', 4500000.00),
+('Koramangala', 'Bangalore', 5000000.00),
+('Whitefield', 'Bangalore', 4000000.00);
+
+
+INSERT INTO BankAccount_153 (accno, branch_name, balance) VALUES
+(201, 'MG Road', 2000.00),
+(202, 'Indiranagar', 1500.50),
+(203, 'Jayanagar', 3200.75),
+(204, 'Koramangala', 5000.00),
+(205, 'Whitefield', 1800.25);
+
+
+INSERT INTO BankCustomer_153 (customer_name, customer_street, customer_city) VALUES
+('Rahul Sharma', '10th Main', 'Bangalore'),
+('Priya Iyer', '5th Cross', 'Bangalore'),
+('Amit Reddy', '4th Block', 'Bangalore'),
+('Sneha Rao', '12th Cross', 'Bangalore'),
+('Kiran Kumar', '6th Main', 'Bangalore');
+
+
+INSERT INTO Depositer_153 (customer_name, accno) VALUES
+('Rahul Sharma', 201),
+('Priya Iyer', 202),
+('Amit Reddy', 203),
+('Sneha Rao', 204),
+('Kiran Kumar', 205);
+
+
+INSERT INTO LOAN_153 (loan_number, branch_name, amount) VALUES
+(6001, 'MG Road', 25000.00),
+(6002, 'Indiranagar', 15000.00),
+(6003, 'Jayanagar', 30000.00),
+(6004, 'Koramangala', 18000.00),
+(6005, 'Whitefield', 22000.00);
+
+select *from Branch_153;
+select *from BankCustomer_162;
+select *from Depositer_162;
+select *from BankAccount_162;
+select *from LOAN_162;
+
+SELECT
+    branch_name,
+    assets / 100000 AS "assets in lakhs"
+FROM
+    Branch_153;
+
+
+SELECT
+    d.customer_name,
+    COUNT(d.accno) AS deposit_count
+FROM
+    Depositer_153 d
+JOIN
+    BankAccount_153 b ON d.accno = b.accno
+WHERE
+    b.branch_name = 'Koramangala'
+GROUP BY
+    d.customer_name
+HAVING
+    COUNT(d.accno) >= 2;
+
+
+CREATE VIEW BranchLoanSums AS
+SELECT
+    branch_name,
+    SUM(amount) AS total_loan_amount
+FROM
+    LOAN_153
+GROUP BY
+    branch_name;
+
+SELECT * FROM BranchLoanSums;
